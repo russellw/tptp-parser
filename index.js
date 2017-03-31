@@ -60,6 +60,29 @@ function lex() {
 				return;
 			}
 			break;
+		case '"':
+		case "'":
+			var q = text[i];
+			for (var j = i + 1; text[j] !== q; j++) {
+				if (j === text.length) {
+					err('unclosed quote');
+				}
+				if (text[j] === '\\') {
+					switch (text[j + 1]) {
+					case '\\':
+					case q:
+						j++;
+						break;
+					default:
+						err('unknown escape sequence');
+						break;
+					}
+				}
+			}
+			j++;
+			tok = text.slice(i, j);
+			i = j;
+			return;
 		case '$':
 		case 'A':
 		case 'B':
@@ -118,6 +141,11 @@ function lex() {
 			tok = text.slice(i, j);
 			i = j;
 			return;
+		case '%':
+			while (i < text.length && text[i] !== '\n') {
+				i++;
+			}
+			continue;
 		case '/':
 			switch (text[i + 1]) {
 			case '*':
