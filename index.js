@@ -32,10 +32,17 @@ function lex() {
 		case '\r':
 			i++;
 			continue;
-		default:
-			tok = text[i++];
-			return;
+		case '!':
+			switch (text[i + 1]) {
+			case '=':
+				tok = text.slice(i, i + 2);
+				i += 2;
+				return;
+			}
+			break;
 		}
+		tok = text[i++];
+		return;
 	}
 }
 
