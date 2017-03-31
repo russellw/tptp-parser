@@ -118,6 +118,22 @@ function lex() {
 			tok = text.slice(i, j);
 			i = j;
 			return;
+		case '/':
+			switch (text[i + 1]) {
+			case '*':
+				var line1 = line;
+				for (i += 2; !(text[i] === '*' && text[i + 1] === '/'); i++) {
+					if (i === text.length) {
+						line = line1;
+						err("unclosed comment");
+					}
+					if (text[i] === '\n') {
+						line++;
+					}
+				}
+				continue;
+			}
+			break;
 		case '<':
 			switch (text[i + 1]) {
 			case '=':
@@ -137,7 +153,6 @@ function lex() {
 					i += 3;
 					return;
 				}
-				err("expected '>'");
 				break;
 			}
 			break;
