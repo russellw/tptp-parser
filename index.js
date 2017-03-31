@@ -40,6 +40,46 @@ function lex() {
 				return;
 			}
 			break;
+		case '<':
+			switch (text[i + 1]) {
+			case '=':
+				switch (text[i + 1]) {
+				case '>':
+					tok = text.slice(i, i + 3);
+					i += 3;
+					return;
+				}
+				tok = text.slice(i, i + 2);
+				i += 2;
+				return;
+			case '~':
+				switch (text[i + 1]) {
+				case '>':
+					tok = text.slice(i, i + 3);
+					i += 3;
+					return;
+				}
+				err("expected '>'");
+				break;
+			}
+			break;
+		case '=':
+			switch (text[i + 1]) {
+			case '>':
+				tok = text.slice(i, i + 2);
+				i += 2;
+				return;
+			}
+			break;
+		case '~':
+			switch (text[i + 1]) {
+			case '&':
+			case '|':
+				tok = text.slice(i, i + 2);
+				i += 2;
+				return;
+			}
+			break;
 		}
 		tok = text[i++];
 		return;
