@@ -1,7 +1,13 @@
 {
   "author": "Russell Wallace <russell.wallace@gmail.com>",
+  "bin": "./tptp-parser.js",
   "bugs": {
     "url": "https://github.com/russellw/tptp-parser/issues"
+  },
+  "dependencies": {
+    "commander": "^2.9.0",
+    "get-stdin": "^5.0.1",
+    "glob": "^7.1.1"
   },
   "description": "Parser for the TPTP file format",
   "homepage": "https://github.com/russellw/tptp-parser#readme",
