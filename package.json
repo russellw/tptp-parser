@@ -1,22 +1,22 @@
 {
-  "name": "tptp-parser",
-  "version": "1.0.0",
-  "description": "Parser for the TPTP file format",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "author": "Russell Wallace <russell.wallace@gmail.com>",
+  "bugs": {
+    "url": "https://github.com/russellw/tptp-parser/issues"
   },
+  "description": "Parser for the TPTP file format",
+  "homepage": "https://github.com/russellw/tptp-parser#readme",
+  "keywords": [
+    "tptp"
+  ],
+  "license": "MIT",
+  "main": "index.js",
+  "name": "tptp-parser",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/russellw/tptp-parser.git"
   },
-  "keywords": [
-    "tptp"
-  ],
-  "author": "Russell Wallace <russell.wallace@gmail.com>",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/russellw/tptp-parser/issues"
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "homepage": "https://github.com/russellw/tptp-parser#readme"
+  "version": "1.0.0"
 }
