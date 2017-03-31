@@ -17,8 +17,28 @@ function err(msg) {
 	process.exit(1);
 }
 
+function isalnum(c) {
+	return isalpha(c) || isdigit(c);
+}
+
+function isalpha(c) {
+	return islower(c) || isupper(c);
+}
+
 function isdigit(c) {
 	return '0' <= c && c <= '9';
+}
+
+function isdigit(c) {
+	return '0' <= c && c <= '9';
+}
+
+function islower(c) {
+	return 'a' <= c && c <= 'z';
+}
+
+function isupper(c) {
+	return 'A' <= c && c <= 'Z';
 }
 
 function lex() {
@@ -40,6 +60,64 @@ function lex() {
 				return;
 			}
 			break;
+		case '$':
+		case 'A':
+		case 'B':
+		case 'C':
+		case 'D':
+		case 'E':
+		case 'F':
+		case 'G':
+		case 'H':
+		case 'I':
+		case 'J':
+		case 'K':
+		case 'L':
+		case 'M':
+		case 'N':
+		case 'O':
+		case 'P':
+		case 'Q':
+		case 'R':
+		case 'S':
+		case 'T':
+		case 'U':
+		case 'V':
+		case 'W':
+		case 'X':
+		case 'Y':
+		case 'Z':
+		case 'a':
+		case 'b':
+		case 'c':
+		case 'd':
+		case 'e':
+		case 'f':
+		case 'g':
+		case 'h':
+		case 'i':
+		case 'j':
+		case 'k':
+		case 'l':
+		case 'm':
+		case 'n':
+		case 'o':
+		case 'p':
+		case 'q':
+		case 'r':
+		case 's':
+		case 't':
+		case 'u':
+		case 'v':
+		case 'w':
+		case 'x':
+		case 'y':
+		case 'z':
+			for (var j = i; isalnum(text[j]) || text[j] === '$' || text[j] === '_'; j++) {
+			}
+			tok = text.slice(i, j);
+			i = j;
+			return;
 		case '<':
 			switch (text[i + 1]) {
 			case '=':
