@@ -125,7 +125,7 @@ function lex() {
 				for (i += 2; !(text[i] === '*' && text[i + 1] === '/'); i++) {
 					if (i === text.length) {
 						line = line1;
-						err("unclosed comment");
+						err('unclosed comment');
 					}
 					if (text[i] === '\n') {
 						line++;
