@@ -4,17 +4,18 @@ var fs = require('fs');
 // Tokenizer
 var file;
 var i;
-var line;
 var text;
 var tok;
 
 function err(msg) {
-	if (file) {
-		console.log(file + ':' + line + ': ' + msg);
-	} else {
-		console.log(line + ': ' + msg);
-	}
-	process.exit(1);
+	var loc = location();
+	msg += ' (' + loc.line + ':' + loc.column + ')';
+	var e = new SyntaxError(msg);
+	e.file = file;
+	e.loc = loc;
+	e.pos = i;
+	e.raisedAt = i;
+	throw e;
 }
 
 function isalnum(c) {
@@ -44,12 +45,11 @@ function isupper(c) {
 function lex() {
 	for (; ; ) {
 		switch (text[i]) {
-		case '\n':
-			line++;
-		case ' ':
 		case '\t':
+		case '\n':
 		case '\v':
 		case '\r':
+		case ' ':
 			i++;
 			continue;
 		case '!':
@@ -64,8 +64,8 @@ function lex() {
 		case "'":
 			var q = text[i];
 			for (var j = i + 1; text[j] !== q; j++) {
-				if (j === text.length) {
-					err('unclosed quote');
+				if (j === text.length || text[j] < ' ') {
+					err('Unclosed quote');
 				}
 				if (text[j] === '\\') {
 					switch (text[j + 1]) {
@@ -74,7 +74,7 @@ function lex() {
 						j++;
 						break;
 					default:
-						err('unknown escape sequence');
+						err('Unknown escape sequence');
 						break;
 					}
 				}
@@ -153,10 +153,7 @@ function lex() {
 				for (i += 2; !(text[i] === '*' && text[i + 1] === '/'); i++) {
 					if (i === text.length) {
 						line = line1;
-						err('unclosed comment');
-					}
-					if (text[i] === '\n') {
-						line++;
+						err('Unclosed comment');
 					}
 				}
 				continue;
@@ -205,6 +202,23 @@ function lex() {
 		tok = text[i++];
 		return;
 	}
+}
+
+function location() {
+	var line = 1;
+	var column = 0;
+	for (var j = 0; j < i; j++) {
+		if (text[j] === '\n') {
+			column = 0;
+			line++;
+		} else {
+			column++;
+		}
+	}
+	return {
+		column: column,
+		line: line,
+	};
 }
 
 // Parser
