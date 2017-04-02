@@ -1,11 +1,10 @@
 #!/usr/bin/env node
 
 'use strict';
+var commandFiles = require('command-files');
 var commander = require('commander');
 var getStdin = require('get-stdin');
-var glob = require('glob');
 var index = require('./index');
-var os = require('os');
 var util = require('util');
 
 function print(a) {
@@ -22,21 +21,7 @@ commander.version(require('./package.json').version);
 commander.parse(process.argv);
 
 // Files
-var files = commander.args;
-if (os.platform() === 'win32') {
-	files = [];
-	for (var pattern of commander.args) {
-		for (var file of glob.sync(pattern, {
-			nonull: true,
-			nosort: true,
-		})) {
-			files.push(file);
-		}
-	}
-}
-if (files.length === 1 && files[0] === '-') {
-	files = [];
-}
+var files = commandFiles.expand(commander.args);
 switch (files.length) {
 case 0:
 	getStdin().then(function (text) {
