@@ -149,13 +149,12 @@ function lex() {
 		case '/':
 			switch (text[i + 1]) {
 			case '*':
-				var line1 = line;
-				for (i += 2; !(text[i] === '*' && text[i + 1] === '/'); i++) {
-					if (i === text.length) {
-						line = line1;
+				for (var j = i + 2; text.slice(j, j + 2) !== '*/'; j++) {
+					if (j === text.length) {
 						err('Unclosed comment');
 					}
 				}
+				i = j + 2;
 				continue;
 			}
 			break;
