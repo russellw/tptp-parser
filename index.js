@@ -229,7 +229,7 @@ function eat(k) {
 	}
 }
 
-// API
+// Exports
 
 function parse(t, f) {
 	file = f;
