@@ -1,88 +1,86 @@
-'use strict';
-var fs = require('fs');
+'use strict'
+var fs = require('fs')
 
 // Tokenizer
-var file;
-var i;
-var text;
-var tok;
+var file
+var i
+var text
+var tok
 
 function err(msg) {
-	var loc = location();
-	msg += ' (' + loc.line + ':' + loc.column + ')';
-	var e = new SyntaxError(msg);
-	e.file = file;
-	e.loc = loc;
-	e.pos = i;
-	e.raisedAt = i;
-	throw e;
+	var loc = location()
+	msg += ' (' + loc.line + ':' + loc.column + ')'
+	var e = new SyntaxError(msg)
+	e.file = file
+	e.loc = loc
+	e.pos = i
+	e.raisedAt = i
+	throw e
 }
 
 function isalnum(c) {
-	return isalpha(c) || isdigit(c);
+	return isalpha(c) || isdigit(c)
 }
 
 function isalpha(c) {
-	return islower(c) || isupper(c);
+	return islower(c) || isupper(c)
 }
 
 function isdigit(c) {
-	return '0' <= c && c <= '9';
+	return '0' <= c && c <= '9'
 }
 
 function isdigit(c) {
-	return '0' <= c && c <= '9';
+	return '0' <= c && c <= '9'
 }
 
 function islower(c) {
-	return 'a' <= c && c <= 'z';
+	return 'a' <= c && c <= 'z'
 }
 
 function isupper(c) {
-	return 'A' <= c && c <= 'Z';
+	return 'A' <= c && c <= 'Z'
 }
 
 function lex() {
-	for (; ; ) {
+	for (;;) {
 		switch (text[i]) {
 		case '\t':
 		case '\n':
 		case '\v':
 		case '\r':
 		case ' ':
-			i++;
-			continue;
+			i++
+			continue
 		case '!':
 			switch (text[i + 1]) {
 			case '=':
-				tok = text.slice(i, i + 2);
-				i += 2;
-				return;
+				tok = text.slice(i, i + 2)
+				i += 2
+				return
 			}
-			break;
+			break
 		case '"':
 		case "'":
-			var q = text[i];
+			var q = text[i]
 			for (var j = i + 1; text[j] !== q; j++) {
-				if (j === text.length || text[j] < ' ') {
-					err('Unclosed quote');
-				}
-				if (text[j] === '\\') {
+				if (j === text.length || text[j] < ' ')
+					err('Unclosed quote')
+				if (text[j] === '\\')
 					switch (text[j + 1]) {
 					case '\\':
 					case q:
-						j++;
-						break;
+						j++
+						break
 					default:
-						err('Unknown escape sequence');
-						break;
+						err('Unknown escape sequence')
+						break
 					}
-				}
 			}
-			j++;
-			tok = text.slice(i, j);
-			i = j;
-			return;
+			j++
+			tok = text.slice(i, j)
+			i = j
+			return
 		case '$':
 		case 'A':
 		case 'B':
@@ -136,115 +134,99 @@ function lex() {
 		case 'x':
 		case 'y':
 		case 'z':
-			for (var j = i; isalnum(text[j]) || text[j] === '$' || text[j] === '_'; j++) {
-			}
-			tok = text.slice(i, j);
-			i = j;
-			return;
+			for (var j = i; isalnum(text[j]) || text[j] === '$' || text[j] === '_'; j++)
+				;
+			tok = text.slice(i, j)
+			i = j
+			return
 		case '%':
-			while (i < text.length && text[i] !== '\n') {
-				i++;
-			}
-			continue;
+			while (i < text.length && text[i] !== '\n')
+				i++
+			continue
 		case '/':
 			switch (text[i + 1]) {
 			case '*':
-				for (var j = i + 2; text.slice(j, j + 2) !== '*/'; j++) {
-					if (j === text.length) {
-						err('Unclosed comment');
-					}
-				}
-				i = j + 2;
-				continue;
+				for (var j = i + 2; text.slice(j, j + 2) !== '*/'; j++)
+					if (j === text.length)
+						err('Unclosed comment')
+				i = j + 2
+				continue
 			}
-			break;
+			break
 		case '<':
 			switch (text[i + 1]) {
 			case '=':
 				switch (text[i + 1]) {
 				case '>':
-					tok = text.slice(i, i + 3);
-					i += 3;
-					return;
+					tok = text.slice(i, i + 3)
+					i += 3
+					return
 				}
-				tok = text.slice(i, i + 2);
-				i += 2;
-				return;
+				tok = text.slice(i, i + 2)
+				i += 2
+				return
 			case '~':
 				switch (text[i + 1]) {
 				case '>':
-					tok = text.slice(i, i + 3);
-					i += 3;
-					return;
+					tok = text.slice(i, i + 3)
+					i += 3
+					return
 				}
-				break;
+				break
 			}
-			break;
+			break
 		case '=':
 			switch (text[i + 1]) {
 			case '>':
-				tok = text.slice(i, i + 2);
-				i += 2;
-				return;
+				tok = text.slice(i, i + 2)
+				i += 2
+				return
 			}
-			break;
+			break
 		case '~':
 			switch (text[i + 1]) {
 			case '&':
 			case '|':
-				tok = text.slice(i, i + 2);
-				i += 2;
-				return;
+				tok = text.slice(i, i + 2)
+				i += 2
+				return
 			}
-			break;
+			break
 		}
-		tok = text[i++];
-		return;
+		tok = text[i++]
+		return
 	}
 }
 
 function location() {
-	var line = 1;
-	var column = 0;
-	for (var j = 0; j < i; j++) {
+	var column = 0
+	var line = 1
+	for (var j = 0; j < i; j++)
 		if (text[j] === '\n') {
-			column = 0;
-			line++;
-		} else {
-			column++;
-		}
-	}
+			column = 0
+			line++
+		} else
+			column++
 	return {
-		column: column,
-		line: line,
-	};
+		column,
+		line,
+	}
 }
 
 // Parser
 
 function eat(k) {
 	if (tok === k) {
-		lex();
-		return true;
+		lex()
+		return true
 	}
 }
 
-// Exports
-
 function parse(t, f) {
-	file = f;
-	i = 0;
-	line = 1;
-	text = t;
-	lex();
+	file = f
+	i = 0
+	text = t
+	lex()
 }
 
-function read(file) {
-	var text = fs.readFileSync(file, {
-		encoding: 'utf8',
-	});
-	return parse(text);
-}
-
-exports.parse = parse;
-exports.read = read;
+exports.parse = parse
