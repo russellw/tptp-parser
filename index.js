@@ -215,10 +215,58 @@ function location() {
 
 // Parser
 
+function annotated_formula() {
+	lex()
+	expect('(')
+	var nm = name()
+	expect(',')
+	var role = formula_role()
+	expect(',')
+	formula()
+	expect(')')
+	expect('.')
+}
+
 function eat(k) {
 	if (tok === k) {
 		lex()
 		return true
+	}
+}
+
+function expect(k) {
+	if (!eat(k))
+		err("Expected '" + k + "'")
+}
+
+function formula() {
+	var args = [unitary_formula()]
+	var op = tok
+	switch (tok) {
+	case '&':
+	case '|':
+		while (eat(op))
+			args.push(unitary_formula())
+		break
+	case '<=':
+		lex()
+		args.unshift(unitary_formula())
+		op = '=>'
+		break
+	case '<=>':
+	case '<~>':
+	case '=>':
+	case '~&':
+	case '~|':
+		lex()
+		args.push(unitary_formula())
+		break
+	default:
+		return args[0]
+	}
+	return {
+		args,
+		op,
 	}
 }
 
@@ -227,6 +275,35 @@ function parse(t, f) {
 	i = 0
 	text = t
 	lex()
+	while (tok)
+		switch (tok) {
+		case 'cnf':
+		case 'fof':
+			annotated_formula()
+			break
+		default:
+			if (islower(tok[0]))
+				err('Unknown language')
+			err('Expected input')
+			break
+		}
+}
+
+function unitary_formula() {
+	switch (tok) {
+	case '(':
+		lex()
+		var a = formula()
+		expect(')')
+		return a
+	case '~':
+		lex()
+		return {
+			args: [unitary_formula()],
+			op: '~',
+		}
+	}
+	return infix_unary()
 }
 
 exports.parse = parse
