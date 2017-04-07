@@ -270,6 +270,24 @@ function formula() {
 	}
 }
 
+function infix_unary() {
+	var a = atomic_term()
+	switch (tok) {
+	case '!=':
+	case '=':
+		var op = tok
+		lex()
+		return {
+			args: [
+				a,
+				atomic_term(),
+			],
+			op,
+		}
+	}
+	return a
+}
+
 function parse(t, f) {
 	file = f
 	i = 0
