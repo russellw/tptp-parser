@@ -227,6 +227,22 @@ function annotated_formula() {
 	expect('.')
 }
 
+function defined_atomic_term() {
+	switch (tok) {
+	case '$false':
+		return {
+			op: 'const',
+			val: false,
+		}
+	case '$true':
+		return {
+			op: 'const',
+			val: true,
+		}
+	}
+	err('Unknown term')
+}
+
 function eat(k) {
 	if (tok === k) {
 		lex()
@@ -271,7 +287,7 @@ function formula() {
 }
 
 function infix_unary() {
-	var a = atomic_term()
+	var a = term()
 	switch (tok) {
 	case '!=':
 	case '=':
@@ -280,7 +296,7 @@ function infix_unary() {
 		return {
 			args: [
 				a,
-				atomic_term(),
+				term(),
 			],
 			op,
 		}
@@ -305,6 +321,23 @@ function parse(t, f) {
 			err('Expected input')
 			break
 		}
+}
+
+function term() {
+	switch (tok[0]) {
+	case '$':
+		return defined_atomic_term()
+	}
+	err('Syntax error')
+}
+
+function term_args() {
+	expect(')')
+	var a = [term()]
+	while (eat(','))
+		a.push(term())
+	expect(')')
+	return a
 }
 
 function unitary_formula() {
