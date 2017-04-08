@@ -227,20 +227,64 @@ function annotated_formula() {
 	expect('.')
 }
 
-function defined_atomic_term() {
+function defined_term() {
 	switch (tok) {
+	case '$difference':
+		return defined_term_arity('-', 2)
+	case '$distinct':
+		var args = term_args()
+		var clauses = []
+		for (var i = 0; i < args.length; i++)
+			for (var j = 0; j < i; j++)
+				clauses.push({
+					args: [
+						args[i],
+						args[j],
+					],
+					op: '!=',
+				})
+		return {
+			args: clauses,
+			op: '&',
+		}
 	case '$false':
 		return {
 			op: 'const',
 			val: false,
 		}
+	case '$greater':
+		return defined_term_arity('>', 2)
+	case '$greatereq':
+		return defined_term_arity('>=', 2)
+	case '$less':
+		return defined_term_arity('<', 2)
+	case '$lesseq':
+		return defined_term_arity('<=', 2)
+	case '$product':
+		return defined_term_arity('*', 2)
+	case '$quotient':
+		return defined_term_arity('/', 2)
+	case '$sum':
+		return defined_term_arity('+', 2)
 	case '$true':
 		return {
 			op: 'const',
 			val: true,
 		}
+	case '$uminus':
+		return defined_term_arity('-', 1)
 	}
 	err('Unknown term')
+}
+
+function defined_term_arity(op, arity) {
+	var args = term_args()
+	if (args.length !== arity)
+		err('Expected ' + arity + ' arguments')
+	return {
+		args,
+		op,
+	}
 }
 
 function eat(k) {
@@ -326,7 +370,7 @@ function parse(t, f) {
 function term() {
 	switch (tok[0]) {
 	case '$':
-		return defined_atomic_term()
+		return defined_term()
 	}
 	err('Syntax error')
 }
