@@ -5,7 +5,7 @@ function get(m, key) {
 	while (m) {
 		if (m.key === key)
 			return m.val
-		m = m.parent
+		m = m.outer
 	}
 }
 
@@ -36,7 +36,7 @@ function isupper(c) {
 function put(m, key, val) {
 	return {
 		key,
-		parent: m,
+		outer: m,
 		val,
 	}
 }
