@@ -6,15 +6,8 @@ var commander = require('commander')
 var fs = require('fs')
 var getStdin = require('get-stdin')
 var index = require('./index')
+var iop = require('iop')
 var util = require('util')
-
-function print(a) {
-	console.log(util.inspect(a, {
-		depth: null,
-		maxArrayLength: null,
-		showHidden: false,
-	}))
-}
 
 function read(file) {
 	var text = fs.readFileSync(file, {
