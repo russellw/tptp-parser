@@ -8,7 +8,7 @@
     "command-files": "^1.1.0",
     "commander": "^2.9.0",
     "get-stdin": "^5.0.1",
-    "iop": "^1.1.0"
+    "iop": "^1.1.1"
   },
   "description": "Parser for the TPTP file format",
   "homepage": "https://github.com/russellw/tptp-parser#readme",
