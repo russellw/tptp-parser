@@ -10,9 +10,7 @@ var iop = require('iop')
 var util = require('util')
 
 function read(file) {
-	var text = fs.readFileSync(file, {
-		encoding: 'utf8',
-	})
+	var text = fs.readFileSync(file, 'utf8')
 	return index.parse(text)
 }
 
