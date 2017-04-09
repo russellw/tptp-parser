@@ -1,45 +1,6 @@
 'use strict'
 var fs = require('fs')
-
-function get(m, key) {
-	while (m) {
-		if (m.key === key)
-			return m.val
-		m = m.outer
-	}
-}
-
-function isalnum(c) {
-	return isalpha(c) || isdigit(c)
-}
-
-function isalpha(c) {
-	return islower(c) || isupper(c)
-}
-
-function isdigit(c) {
-	return '0' <= c && c <= '9'
-}
-
-function isdigit(c) {
-	return '0' <= c && c <= '9'
-}
-
-function islower(c) {
-	return 'a' <= c && c <= 'z'
-}
-
-function isupper(c) {
-	return 'A' <= c && c <= 'Z'
-}
-
-function put(m, key, val) {
-	return {
-		key,
-		outer: m,
-		val,
-	}
-}
+var iop = require('iop')
 
 // Tokenizer
 var file
@@ -150,7 +111,7 @@ function lex() {
 		case 'x':
 		case 'y':
 		case 'z':
-			for (var j = i; isalnum(text[j]) || text[j] === '$' || text[j] === '_'; j++)
+			for (var j = i; iop.isalnum(text[j]) || text[j] === '$' || text[j] === '_'; j++)
 				;
 			tok = text.slice(i, j)
 			i = j
@@ -389,7 +350,7 @@ function parse(t, f) {
 			annotated_formula()
 			break
 		default:
-			if (islower(tok[0]))
+			if (iop.islower(tok[0]))
 				err('Unknown language')
 			err('Expected input')
 			break
@@ -454,7 +415,7 @@ function term(bound) {
 	case 'X':
 	case 'Y':
 	case 'Z':
-		var a = get(bound, tok)
+		var a = iop.get(bound, tok)
 		if (a)
 			return a
 		a = free.get(tok)
