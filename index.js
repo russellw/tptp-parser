@@ -229,9 +229,8 @@ function location() {
 	}
 }
 
-var free
-
 // Parser
+var free
 var functions
 
 function annotated_formula() {
