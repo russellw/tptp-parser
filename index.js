@@ -237,6 +237,7 @@ function defined_term(bound) {
 			op: '&',
 		}
 	case '$false':
+		lex()
 		return {
 			op: 'const',
 			val: false,
@@ -256,6 +257,7 @@ function defined_term(bound) {
 	case '$sum':
 		return defined_term_arity(bound, '+', 2)
 	case '$true':
+		lex()
 		return {
 			op: 'const',
 			val: true,
@@ -423,17 +425,19 @@ function term(bound) {
 	case 'X':
 	case 'Y':
 	case 'Z':
-		var a = iop.get(bound, tok)
+		var name = tok
+		lex()
+		var a = iop.get(bound, name)
 		if (a)
 			return a
-		a = free.get(tok)
+		a = free.get(name)
 		if (a)
 			return a
 		a = {
-			name: tok,
+			name,
 			op: 'var',
 		}
-		free.set(tok, a)
+		free.set(name, a)
 		return a
 	case 'a':
 	case 'b':
@@ -467,7 +471,7 @@ function term(bound) {
 }
 
 function term_args(bound) {
-	expect(')')
+	expect('(')
 	var a = [term(bound)]
 	while (eat(','))
 		a.push(term(bound))
@@ -477,6 +481,28 @@ function term_args(bound) {
 
 function unitary_formula(bound) {
 	switch (tok) {
+	case '!':
+	case '?':
+		var op = tok
+		lex()
+		expect('[')
+		var vars = []
+		do {
+			var a = {
+				name: tok,
+				op: 'var',
+			}
+			bound = iop.put(bound, tok, a)
+			lex()
+		} while (eat(','))
+		expect(']')
+		expect(':')
+		var args = [unitary_formula(bound)]
+		return {
+			args,
+			op,
+			vars,
+		}
 	case '(':
 		lex()
 		var a = formula(bound)
@@ -490,6 +516,17 @@ function unitary_formula(bound) {
 		}
 	}
 	return infix_unary(bound)
+}
+
+function unquote(s) {
+	s = s.slice(1, s.length - 1)
+	var r = []
+	for (var i = 0; i < s.length; i++) {
+		if (s[i] === '\\')
+			i++
+		r.push(s[i])
+	}
+	return r.join('')
 }
 
 exports.parse = parse
