@@ -199,7 +199,7 @@ function annotated_formula() {
 
 	// Name
 	expect('(')
-	var nm = name()
+	var name = formula_name()
 
 	// Role
 	expect(',')
@@ -317,6 +317,24 @@ function formula(bound) {
 		args,
 		op,
 	}
+}
+
+function formula_name() {
+	if (iop.isalnum(tok[0])) {
+		var name = tok
+		lex()
+		return name
+	}
+	err('Expected name')
+}
+
+function formula_role() {
+	if (iop.islower(tok[0])) {
+		var name = tok
+		lex()
+		return name
+	}
+	err('Expected role')
 }
 
 function infix_unary(bound) {
