@@ -416,17 +416,20 @@ function infix_unary(bound) {
 	return a
 }
 
-function parse(t, f) {
-	file = f
+function parse(text1, file1) {
+	file = file1
 	functions = new Map()
 	i = 0
-	text = t
+	text = text1
 	lex()
 	while (tok)
 		switch (tok) {
 		case 'cnf':
 		case 'fof':
 			annotated_formula()
+			break
+		case 'include':
+			include()
 			break
 		default:
 			if (iop.islower(tok[0]))
