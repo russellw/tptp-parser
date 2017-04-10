@@ -208,12 +208,17 @@ function lex() {
 
 function number() {
 	var j = i
-	switch (text[j]) {
-	case '+':
-	case '-':
-		j++
-		break
+
+	function sign() {
+		switch (text[j]) {
+		case '+':
+		case '-':
+			j++
+			break
+		}
 	}
+
+	sign()
 	while (iop.isdigit(text[j]))
 		j++
 	switch (text[j]) {
@@ -225,12 +230,7 @@ function number() {
 		case 'E':
 		case 'e':
 			j++
-			switch (text[j]) {
-			case '+':
-			case '-':
-				j++
-				break
-			}
+			sign()
 			while (iop.isdigit(text[j]))
 				j++
 			break
@@ -244,12 +244,7 @@ function number() {
 	case 'E':
 	case 'e':
 		j++
-		switch (text[j]) {
-		case '+':
-		case '-':
-			j++
-			break
-		}
+		sign()
 		while (iop.isdigit(text[j]))
 			j++
 		break
