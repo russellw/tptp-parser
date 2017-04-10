@@ -209,6 +209,11 @@ function lex() {
 function number() {
 	var j = i
 
+	function digits() {
+		while (iop.isdigit(text[j]))
+			j++
+	}
+
 	function sign() {
 		switch (text[j]) {
 		case '+':
@@ -219,34 +224,29 @@ function number() {
 	}
 
 	sign()
-	while (iop.isdigit(text[j]))
-		j++
+	digits()
 	switch (text[j]) {
 	case '.':
 		j++
-		while (iop.isdigit(text[j]))
-			j++
+		digits()
 		switch (text[j]) {
 		case 'E':
 		case 'e':
 			j++
 			sign()
-			while (iop.isdigit(text[j]))
-				j++
+			digits()
 			break
 		}
 		break
 	case '/':
 		j++
-		while (iop.isdigit(text[j]))
-			j++
+		digits()
 		break
 	case 'E':
 	case 'e':
 		j++
 		sign()
-		while (iop.isdigit(text[j]))
-			j++
+		digits()
 		break
 	}
 	tok = text.slice(i, j)
