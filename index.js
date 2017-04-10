@@ -375,38 +375,28 @@ function parse(t, f) {
 		}
 }
 
+function plain_term(bound, name) {
+	var f = {
+		name,
+		op: 'function',
+	}
+	lex()
+	if (tok !== '(')
+		return f
+	var args = term_args(bound)
+	return {
+		args,
+		f,
+		op: 'call',
+	}
+}
+
 function term(bound) {
 	switch (tok[0]) {
 	case '$':
 		return defined_term(bound)
 	case "'":
-	case 'a':
-	case 'b':
-	case 'c':
-	case 'd':
-	case 'e':
-	case 'f':
-	case 'g':
-	case 'h':
-	case 'i':
-	case 'j':
-	case 'k':
-	case 'l':
-	case 'm':
-	case 'n':
-	case 'o':
-	case 'p':
-	case 'q':
-	case 'r':
-	case 's':
-	case 't':
-	case 'u':
-	case 'v':
-	case 'w':
-	case 'x':
-	case 'y':
-	case 'z':
-		return plain_term(bound)
+		return plain_term(bound, unquote(tok))
 	case 'A':
 	case 'B':
 	case 'C':
@@ -445,6 +435,33 @@ function term(bound) {
 		}
 		free.set(tok, a)
 		return a
+	case 'a':
+	case 'b':
+	case 'c':
+	case 'd':
+	case 'e':
+	case 'f':
+	case 'g':
+	case 'h':
+	case 'i':
+	case 'j':
+	case 'k':
+	case 'l':
+	case 'm':
+	case 'n':
+	case 'o':
+	case 'p':
+	case 'q':
+	case 'r':
+	case 's':
+	case 't':
+	case 'u':
+	case 'v':
+	case 'w':
+	case 'x':
+	case 'y':
+	case 'z':
+		return plain_term(bound, tok)
 	}
 	err('Syntax error')
 }
