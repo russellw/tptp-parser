@@ -133,7 +133,7 @@ function lex() {
 		case '<':
 			switch (text[i + 1]) {
 			case '=':
-				switch (text[i + 1]) {
+				switch (text[i + 2]) {
 				case '>':
 					tok = text.slice(i, i + 3)
 					i += 3
@@ -143,7 +143,7 @@ function lex() {
 				i += 2
 				return
 			case '~':
-				switch (text[i + 1]) {
+				switch (text[i + 2]) {
 				case '>':
 					tok = text.slice(i, i + 3)
 					i += 3
