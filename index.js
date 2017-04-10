@@ -251,6 +251,7 @@ function number() {
 }
 
 // Parser
+var distinct_objects
 var free
 var functions
 
@@ -444,6 +445,7 @@ function infix_unary(bound) {
 }
 
 function parse(text, file) {
+	distinct_objects = new Map()
 	functions = new Map()
 	parse1(text, file)
 }
@@ -488,6 +490,18 @@ function plain_term(bound, name) {
 
 function term(bound) {
 	switch (tok[0]) {
+	case '"':
+		var name = unquote(tok)
+		lex()
+		a = distinct_objects.get(name)
+		if (a)
+			return a
+		a = {
+			name,
+			op: 'distinct_object',
+		}
+		distinct_objects.set(name, a)
+		return a
 	case '$':
 		return defined_term(bound)
 	case "'":
