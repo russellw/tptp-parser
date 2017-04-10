@@ -120,6 +120,13 @@ function lex() {
 			while (i < text.length && text[i] !== '\n')
 				i++
 			continue
+		case '+':
+		case '-':
+			if (iop.isdigit(text[i + 1])) {
+				number()
+				return
+			}
+			break
 		case '/':
 			switch (text[i + 1]) {
 			case '*':
@@ -130,6 +137,18 @@ function lex() {
 				continue
 			}
 			break
+		case '0':
+		case '1':
+		case '2':
+		case '3':
+		case '4':
+		case '5':
+		case '6':
+		case '7':
+		case '8':
+		case '9':
+			number()
+			return
 		case '<':
 			switch (text[i + 1]) {
 			case '=':
@@ -188,6 +207,46 @@ function location() {
 		column,
 		line,
 	}
+}
+
+function number() {
+	var j = i
+	switch (text[j]) {
+	case '+':
+	case '-':
+		j++
+		break
+	}
+	while (iop.isdigit(text[j]))
+		j++
+	switch (text[j]) {
+	case '.':
+		j++
+		while (iop.isdigit(text[j]))
+			j++
+		switch (text[j]) {
+		case 'E':
+		case 'e':
+			j++
+			while (iop.isdigit(text[j]))
+				j++
+			break
+		}
+		break
+	case '/':
+		j++
+		while (iop.isdigit(text[j]))
+			j++
+		break
+	case 'E':
+	case 'e':
+		j++
+		while (iop.isdigit(text[j]))
+			j++
+		break
+	}
+	tok = text.slice(i, j)
+	i = j
 }
 
 // Parser
