@@ -1,6 +1,7 @@
 'use strict'
 var fs = require('fs')
 var iop = require('iop')
+var path = require('path')
 
 // Tokenizer
 var file
@@ -262,7 +263,10 @@ function annotated_formula() {
 
 	// Role
 	expect(',')
-	var role = formula_role()
+	if (!iop.islower(tok[0]))
+		err('Expected role')
+	var role = tok
+	lex()
 
 	// Formula
 	expect(',')
@@ -389,13 +393,36 @@ function formula_name() {
 	err('Expected name')
 }
 
-function formula_role() {
-	if (iop.islower(tok[0])) {
-		var name = tok
-		lex()
-		return name
+function include() {
+	lex()
+
+	// File
+	expect('(')
+	if (tok[0] !== "'")
+		err('Expected file')
+	var name = unquote(tok)
+	lex()
+
+	// Selection
+	// End
+	expect(')')
+	expect('.')
+
+	// Absolute
+	if (path.isAbsolute(name)) {
+		var file1 = name
+		var text1 = fs.readFileSync(file1, 'utf8')
+		parse1(text1, file1)
+		return
 	}
-	err('Expected role')
+
+	// Relative
+	var tptp = process.env.TPTP
+	if (!tptp)
+		err('TPTP environment variable not defined')
+	var file1 = tptp + '/' + name
+	var text1 = fs.readFileSync(file1, 'utf8')
+	parse1(text1, file1)
 }
 
 function infix_unary(bound) {
@@ -416,9 +443,13 @@ function infix_unary(bound) {
 	return a
 }
 
-function parse(text1, file1) {
-	file = file1
+function parse(text, file) {
 	functions = new Map()
+	parse1(text, file)
+}
+
+function parse1(text1, file1) {
+	file = file1
 	i = 0
 	text = text1
 	lex()
