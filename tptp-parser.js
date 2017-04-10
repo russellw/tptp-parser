@@ -11,7 +11,7 @@ var util = require('util')
 
 function read(file) {
 	var text = fs.readFileSync(file, 'utf8')
-	return index.parse(text)
+	return index.parse(text, file)
 }
 
 // Command line

@@ -10,17 +10,29 @@ var text
 var tok
 
 function err(msg) {
-	var loc = location()
-	msg += ' (' + loc.line + ':' + loc.column + ')'
-	var e = new SyntaxError(msg)
-	e.file = file
-	e.loc = loc
-	e.pos = i
-	e.raisedAt = i
-	throw e
+	var r = []
+
+	// File
+	if (file)
+		r.push(file + ':')
+
+	// Line
+	var line = 1
+	for (var j = 0; j < i; j++)
+		if (text[j] === '\n')
+			line++
+	r.push(line + ': ')
+
+	// Token
+	if (tok)
+		r.push("'" + tok + "': ")
+
+	// Message
+	return r.join('') + msg
 }
 
 function lex() {
+	tok = ''
 	for (;;) {
 		switch (text[i]) {
 		case '\t':
@@ -43,7 +55,7 @@ function lex() {
 			var q = text[i]
 			for (var j = i + 1; text[j] !== q; j++) {
 				if (j === text.length || text[j] < ' ')
-					err('Unclosed quote')
+					throw new Error(err('Unclosed quote'))
 				if (text[j] === '\\')
 					switch (text[j + 1]) {
 					case '\\':
@@ -51,8 +63,7 @@ function lex() {
 						j++
 						break
 					default:
-						err('Unknown escape sequence')
-						break
+						throw new Error(err('Unknown escape sequence'))
 					}
 			}
 			j++
@@ -133,7 +144,7 @@ function lex() {
 			case '*':
 				for (var j = i + 2; text.slice(j, j + 2) !== '*/'; j++)
 					if (j === text.length)
-						err('Unclosed comment')
+						throw new Error(err('Unclosed comment'))
 				i = j + 2
 				continue
 			}
@@ -195,21 +206,6 @@ function lex() {
 	}
 }
 
-function location() {
-	var column = 0
-	var line = 1
-	for (var j = 0; j < i; j++)
-		if (text[j] === '\n') {
-			column = 0
-			line++
-		} else
-			column++
-	return {
-		column,
-		line,
-	}
-}
-
 function number() {
 	var j = i
 	switch (text[j]) {
@@ -229,6 +225,12 @@ function number() {
 		case 'E':
 		case 'e':
 			j++
+			switch (text[j]) {
+			case '+':
+			case '-':
+				j++
+				break
+			}
 			while (iop.isdigit(text[j]))
 				j++
 			break
@@ -242,6 +244,12 @@ function number() {
 	case 'E':
 	case 'e':
 		j++
+		switch (text[j]) {
+		case '+':
+		case '-':
+			j++
+			break
+		}
 		while (iop.isdigit(text[j]))
 			j++
 		break
@@ -265,7 +273,7 @@ function annotated_formula() {
 	// Role
 	expect(',')
 	if (!iop.islower(tok[0]))
-		err('Expected role')
+		throw new Error(err('Expected role'))
 	var role = tok
 	lex()
 
@@ -329,13 +337,13 @@ function defined_term(bound) {
 	case '$uminus':
 		return defined_term_arity(bound, '-', 1)
 	}
-	err('Unknown term')
+	throw new Error(err('Unknown term'))
 }
 
 function defined_term_arity(bound, op, arity) {
 	var args = term_args(bound)
 	if (args.length !== arity)
-		err('Expected ' + arity + ' arguments')
+		throw new Error(err('Expected ' + arity + ' arguments'))
 	return {
 		args,
 		op,
@@ -351,7 +359,7 @@ function eat(k) {
 
 function expect(k) {
 	if (!eat(k))
-		err("Expected '" + k + "'")
+		throw new Error(err("Expected '" + k + "'"))
 }
 
 function formula(bound) {
@@ -391,7 +399,7 @@ function formula_name() {
 		lex()
 		return name
 	}
-	err('Expected name')
+	throw new Error(err('Expected name'))
 }
 
 function include() {
@@ -400,7 +408,7 @@ function include() {
 	// File
 	expect('(')
 	if (tok[0] !== "'")
-		err('Expected file')
+		throw new Error(err('Expected file'))
 	var name = unquote(tok)
 	lex()
 
@@ -420,7 +428,7 @@ function include() {
 	// Relative
 	var tptp = process.env.TPTP
 	if (!tptp)
-		err('TPTP environment variable not defined')
+		throw new Error(err('TPTP environment variable not defined'))
 	var file1 = tptp + '/' + name
 	var text1 = fs.readFileSync(file1, 'utf8')
 	parse1(text1, file1)
@@ -466,9 +474,8 @@ function parse1(text1, file1) {
 			break
 		default:
 			if (iop.islower(tok[0]))
-				err('Unknown language')
-			err('Expected input')
-			break
+				throw new Error(err('Unknown language'))
+			throw new Error(err('Expected input'))
 		}
 }
 
@@ -574,7 +581,7 @@ function term(bound) {
 	case 'z':
 		return plain_term(bound, tok)
 	}
-	err('Syntax error')
+	throw new Error(err('Syntax error'))
 }
 
 function term_args(bound) {
