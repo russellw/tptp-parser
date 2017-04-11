@@ -10,7 +10,7 @@ var i
 var selection
 var text
 var tok
-var tokVal
+var value
 
 function err(msg) {
 	var r = []
@@ -253,8 +253,9 @@ function number() {
 		break
 	default:
 		tok = text.slice(i, j)
-		tokVal = bigInt(tok)
-		break
+		i = j
+		value = bigInt(tok)
+		return
 	}
 	tok = text.slice(i, j)
 	i = j
@@ -479,7 +480,7 @@ function parse1(text1, file1, selection1) {
 	var selection0 = selection
 	var text0 = text
 	var tok0 = tok
-	var tokVal0 = tokVal
+	var value0 = value
 
 	// Load
 	file = file1
@@ -510,7 +511,7 @@ function parse1(text1, file1, selection1) {
 	selection = selection0
 	text = text0
 	tok = tok0
-	tokVal = tokVal0
+	value = value0
 }
 
 function plain_term(bound, name) {
@@ -567,7 +568,7 @@ function term(bound) {
 	case '7':
 	case '8':
 	case '9':
-		var a = tokVal
+		var a = value
 		lex()
 		return a
 	case 'A':
