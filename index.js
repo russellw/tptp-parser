@@ -1,4 +1,5 @@
 'use strict'
+var bigInt = require('big-integer')
 var fs = require('fs')
 var iop = require('iop')
 var path = require('path')
@@ -8,6 +9,7 @@ var file
 var i
 var text
 var tok
+var tokVal
 
 function err(msg) {
 	var r = []
@@ -247,6 +249,10 @@ function number() {
 		j++
 		sign()
 		digits()
+		break
+	default:
+		tok = text.slice(i, j)
+		tokVal = bigInt(tok)
 		break
 	}
 	tok = text.slice(i, j)
@@ -508,6 +514,23 @@ function term(bound) {
 		return defined_term(bound)
 	case "'":
 		return plain_term(bound, unquote(tok))
+	case '+':
+	case '-':
+		if (!iop.isdigit(tok[1]))
+			break
+	case '0':
+	case '1':
+	case '2':
+	case '3':
+	case '4':
+	case '5':
+	case '6':
+	case '7':
+	case '8':
+	case '9':
+		var a = tokVal
+		lex()
+		return a
 	case 'A':
 	case 'B':
 	case 'C':
@@ -576,7 +599,7 @@ function term(bound) {
 	case 'z':
 		return plain_term(bound, tok)
 	}
-	throw new Error(err('Syntax error'))
+	throw new Error(err('Expected term'))
 }
 
 function term_args(bound) {

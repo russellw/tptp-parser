@@ -5,6 +5,7 @@
     "url": "https://github.com/russellw/tptp-parser/issues"
   },
   "dependencies": {
+    "big-integer": "^1.6.19",
     "command-files": "^1.1.0",
     "commander": "^2.9.0",
     "get-stdin": "^5.0.1",
