@@ -7,6 +7,7 @@ var path = require('path')
 // Tokenizer
 var file
 var i
+var selection
 var text
 var tok
 var tokVal
@@ -414,6 +415,18 @@ function include() {
 	lex()
 
 	// Selection
+	var selection1 = selection
+	if (eat(',')) {
+		expect('[')
+		selection1 = new Set()
+		do {
+			var s = formula_name()
+			if (select(s))
+				selection1.add(s)
+		} while (eat(','))
+		expect(']')
+	}
+
 	// End
 	expect(')')
 	expect('.')
@@ -422,7 +435,7 @@ function include() {
 	if (path.isAbsolute(name)) {
 		var file1 = name
 		var text1 = fs.readFileSync(file1, 'utf8')
-		parse1(text1, file1)
+		parse1(text1, file1, selection1)
 		return
 	}
 
@@ -432,7 +445,7 @@ function include() {
 		throw new Error(err('TPTP environment variable not defined'))
 	var file1 = tptp + '/' + name
 	var text1 = fs.readFileSync(file1, 'utf8')
-	parse1(text1, file1)
+	parse1(text1, file1, selection1)
 }
 
 function infix_unary(bound) {
@@ -459,10 +472,11 @@ function parse(text, file) {
 	parse1(text, file)
 }
 
-function parse1(text1, file1) {
+function parse1(text1, file1, selection1) {
 	// Save
 	var file0 = file
 	var i0 = i
+	var selection0 = selection
 	var text0 = text
 	var tok0 = tok
 	var tokVal0 = tokVal
@@ -470,6 +484,7 @@ function parse1(text1, file1) {
 	// Load
 	file = file1
 	i = 0
+	selection = selection1
 	text = text1
 
 	// Parse
@@ -492,6 +507,7 @@ function parse1(text1, file1) {
 	// Restore
 	file = file0
 	i = i0
+	selection = selection0
 	text = text0
 	tok = tok0
 	tokVal = tokVal0
@@ -511,6 +527,12 @@ function plain_term(bound, name) {
 		f,
 		op: 'call',
 	}
+}
+
+function select(name) {
+	if (!selection)
+		return true
+	return selection.has(name)
 }
 
 function term(bound) {
