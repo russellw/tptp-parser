@@ -460,9 +460,19 @@ function parse(text, file) {
 }
 
 function parse1(text1, file1) {
+	// Save
+	var file0 = file
+	var i0 = i
+	var text0 = text
+	var tok0 = tok
+	var tokVal0 = tokVal
+
+	// Load
 	file = file1
 	i = 0
 	text = text1
+
+	// Parse
 	lex()
 	while (tok)
 		switch (tok) {
@@ -478,6 +488,13 @@ function parse1(text1, file1) {
 				throw new Error(err('Unknown language'))
 			throw new Error(err('Expected input'))
 		}
+
+	// Restore
+	file = file0
+	i = i0
+	text = text0
+	tok = tok0
+	tokVal = tokVal0
 }
 
 function plain_term(bound, name) {
