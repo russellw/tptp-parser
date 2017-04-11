@@ -271,19 +271,20 @@ function annotated_formula() {
 
 	// Name
 	expect('(')
-	var name = formula_name()
+	if (select(formula_name())) {
 
-	// Role
-	expect(',')
-	if (!iop.islower(tok[0]))
-		throw new Error(err('Expected role'))
-	var role = tok
-	lex()
+		// Role
+		expect(',')
+		if (!iop.islower(tok[0]))
+			throw new Error(err('Expected role'))
+		var role = tok
+		lex()
 
-	// Formula
-	expect(',')
-	free = new Map()
-	formula()
+		// Formula
+		expect(',')
+		free = new Map()
+		formula()
+	}
 
 	// Annotations
 	if (eat(','))
@@ -499,6 +500,7 @@ function parse(text, file) {
 }
 
 function parse1(text1, file1, selection1) {
+
 	// Save
 	var file0 = file
 	var i0 = i
