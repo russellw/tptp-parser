@@ -286,6 +286,10 @@ function annotated_formula() {
 	formula()
 
 	// Annotations
+	if (eat(','))
+		while (tok !== ')')
+			ignore()
+
 	// End
 	expect(')')
 	expect('.')
@@ -403,6 +407,27 @@ function formula_name() {
 		return name
 	}
 	throw new Error(err('Expected name'))
+}
+
+function ignore() {
+	if (!tok)
+		throw new Error(err("Expected ')'"))
+	switch (tok) {
+	case '(':
+		lex()
+		while (!eat(')'))
+			ignore()
+		return
+	case '[':
+		lex()
+		while (!eat(']')) {
+			if (!tok)
+				throw new Error(err("Expected ']'"))
+			ignore()
+		}
+		return
+	}
+	lex()
 }
 
 function include() {
