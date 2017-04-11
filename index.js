@@ -253,7 +253,10 @@ function number() {
 	default:
 		tok = text.slice(i, j)
 		i = j
-		value = bigInt(tok)
+		value = {
+			op: 'int',
+			val: bigInt(tok),
+		}
 		return
 	}
 	tok = text.slice(i, j)
@@ -319,7 +322,7 @@ function defined_term(bound) {
 	case '$false':
 		lex()
 		return {
-			op: 'const',
+			op: 'bool',
 			val: false,
 		}
 	case '$greater':
@@ -339,7 +342,7 @@ function defined_term(bound) {
 	case '$true':
 		lex()
 		return {
-			op: 'const',
+			op: 'bool',
 			val: true,
 		}
 	case '$uminus':
