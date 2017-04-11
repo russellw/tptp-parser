@@ -7,7 +7,6 @@ var path = require('path')
 // Tokenizer
 var file
 var i
-var selection
 var text
 var tok
 var value
@@ -265,6 +264,7 @@ function number() {
 var distinct_objects
 var free
 var functions
+var selection
 
 function annotated_formula() {
 	lex()
