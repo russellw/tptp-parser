@@ -263,7 +263,7 @@ function number() {
 // Parser
 var distinct_objects
 var free
-var functions
+var funs
 var selection
 
 function annotated_formula() {
@@ -495,7 +495,7 @@ function infix_unary(bound) {
 
 function parse(text, file) {
 	distinct_objects = new Map()
-	functions = new Map()
+	funs = new Map()
 	parse1(text, file)
 }
 
@@ -542,11 +542,15 @@ function parse1(text1, file1, selection1) {
 }
 
 function plain_term(bound, name) {
-	var f = {
-		name,
-		op: 'function',
-	}
 	lex()
+	var f = funs.get(name)
+	if (!f) {
+		f = {
+			name,
+			op: 'fun',
+		}
+		funs.set(name, f)
+	}
 	if (tok !== '(')
 		return f
 	var args = term_args(bound)
