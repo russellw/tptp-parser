@@ -14,12 +14,9 @@ function read(file) {
 	return index.parse(text, file)
 }
 
-// Command line
 commander.usage('[options] <files>')
 commander.version(require('./package.json').version)
 commander.parse(process.argv)
-
-// Files
 var files = commandFiles.expand(commander.args, file => file.endsWith('.p'))
 switch (files.length) {
 case 0:
