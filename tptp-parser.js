@@ -25,11 +25,11 @@ switch (files.length) {
 case 0:
 	getStdin().then(
 		function (text) {
-			print(index.parse(text))
+			iop.print(index.parse(text))
 		})
 	break
 case 1:
-	print(read(files[0]))
+	iop.print(read(files[0]))
 	break
 default:
 	for (var file of files) {
