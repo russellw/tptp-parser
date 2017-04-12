@@ -1,5 +1,6 @@
 'use strict'
 var bigInt = require('big-integer')
+var bigRat = require('big-rational')
 var fs = require('fs')
 var iop = require('iop')
 var path = require('path')
@@ -243,7 +244,13 @@ function number() {
 	case '/':
 		j++
 		digits()
-		break
+		tok = text.slice(i, j)
+		i = j
+		value = {
+			op: 'rat',
+			val: bigRat(tok),
+		}
+		return
 	case 'E':
 	case 'e':
 		j++
@@ -261,6 +268,10 @@ function number() {
 	}
 	tok = text.slice(i, j)
 	i = j
+	value = {
+		op: 'real',
+		val: bigRat(tok),
+	}
 }
 
 // Parser
