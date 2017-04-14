@@ -297,7 +297,19 @@ function annotated_formula() {
 		// Formula
 		expect(',')
 		free = new Map()
-		formula()
+		var a = formula()
+		if (free.size)
+			a = {
+				args: [a],
+				op: '!',
+				vars: Array.from(free.values()),
+			}
+		if (role === 'conjecture')
+			a = {
+				args: [a],
+				op: '~',
+			}
+		formulas.push(a)
 	}
 
 	// Annotations
