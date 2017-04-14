@@ -276,6 +276,7 @@ function number() {
 
 // Parser
 var distinct_objects
+var formulas
 var free
 var funs
 var selection
@@ -521,8 +522,10 @@ function infix_unary(bound) {
 
 function parse(text, file) {
 	distinct_objects = new Map()
+	formulas = []
 	funs = new Map()
 	parse1(text, file)
+	return formulas
 }
 
 function parse1(text1, file1, selection1) {
