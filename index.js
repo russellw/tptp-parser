@@ -8,6 +8,7 @@ var path = require('path')
 // Tokenizer
 var file
 var i
+var status
 var text
 var tok
 var value
@@ -41,6 +42,7 @@ function lex() {
 		case '\t':
 		case '\n':
 		case '\v':
+		case '\f':
 		case '\r':
 		case ' ':
 			i++
@@ -132,8 +134,14 @@ function lex() {
 			i = j
 			return
 		case '%':
-			while (i < text.length && text[i] !== '\n')
-				i++
+			for (var j = i; j < text.length && text[j] !== '\n'; j++)
+				;
+			if (!status) {
+				var match = /^%\s*Status\s*:\s*(\w+)\s*$/.exec(text.slice(i, j))
+				if (match)
+					status = match[1]
+			}
+			i = j
 			continue
 		case '+':
 		case '-':
@@ -524,8 +532,12 @@ function parse(text, file) {
 	distinct_objects = new Map()
 	formulas = []
 	funs = new Map()
+	status = ''
 	parse1(text, file)
-	return formulas
+	return {
+		formulas,
+		status,
+	}
 }
 
 function parse1(text1, file1, selection1) {
