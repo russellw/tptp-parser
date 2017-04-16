@@ -283,6 +283,7 @@ function number() {
 }
 
 // Parser
+var conjecture
 var distinct_objects
 var formulas
 var free
@@ -313,11 +314,15 @@ function annotated_formula() {
 				op: '!',
 				vars: Array.from(free.values()),
 			}
-		if (role === 'conjecture')
+		if (role === 'conjecture') {
 			a = {
 				args: [a],
 				op: '~',
 			}
+			if (conjecture)
+				throw new Error(err('Multiple conjectures not supported'))
+			conjecture = a
+		}
 		formulas.push(a)
 	}
 
@@ -529,12 +534,14 @@ function infix_unary(bound) {
 }
 
 function parse(text, file) {
+	conjecture = null
 	distinct_objects = new Map()
 	formulas = []
 	funs = new Map()
 	status = ''
 	parse1(text, file)
 	return {
+		conjecture,
 		formulas,
 		status,
 	}
