@@ -17,13 +17,14 @@ function read(file) {
 commander.usage('[options] <files>')
 commander.version(require('./package.json').version)
 commander.parse(process.argv)
+if (!commander.lang && !commander.args.length && tty.isatty(process.stdin.fd))
+	process.exit(0)
 var files = commandFiles.expand(commander.args, file => file.endsWith('.p'))
 switch (files.length) {
 case 0:
-	getStdin().then(
-		function (text) {
-			iop.print(index.parse(text))
-		})
+	getStdin().then(function (text) {
+		iop.print(index.parse(text))
+	})
 	break
 case 1:
 	iop.print(read(files[0]))
