@@ -1,6 +1,7 @@
 'use strict'
 var bigInt = require('big-integer')
 var bigRat = require('big-rational')
+var cnf = require('clause-normal-form')
 var fs = require('fs')
 var iop = require('iop')
 var path = require('path')
@@ -284,7 +285,7 @@ function number() {
 
 // Parser
 var conjecture
-var distinct_objects
+var distinct_objs
 var formulas
 var free
 var funs
@@ -309,18 +310,11 @@ function annotated_formula() {
 		free = new Map()
 		var a = formula()
 		if (free.size)
-			a = {
-				args: [a],
-				op: '!',
-				vars: Array.from(free.values()),
-			}
+			a = cnf.quant('!', Array.from(free.values()), a)
 		if (role === 'conjecture') {
-			a = {
-				args: [a],
-				op: '~',
-			}
 			if (conjecture)
 				throw new Error(err('Multiple conjectures not supported'))
+			a = cnf.term('~', a)
 			conjecture = a
 		}
 		formulas.push(a)
@@ -342,26 +336,14 @@ function defined_term(bound) {
 		return defined_term_arity(bound, '-', 2)
 	case '$distinct':
 		var args = term_args(bound)
-		var clauses = []
+		var clauses = cnf.term('&')
 		for (var i = 0; i < args.length; i++)
 			for (var j = 0; j < i; j++)
-				clauses.push({
-					args: [
-						args[i],
-						args[j],
-					],
-					op: '!=',
-				})
-		return {
-			args: clauses,
-			op: '&',
-		}
+				clauses.push(cnf.term('!=', args[i], args[j]))
+		return clauses
 	case '$false':
 		lex()
-		return {
-			op: 'bool',
-			val: false,
-		}
+		return cnf.bool(false)
 	case '$greater':
 		return defined_term_arity(bound, '>', 2)
 	case '$greatereq':
@@ -378,10 +360,7 @@ function defined_term(bound) {
 		return defined_term_arity(bound, '+', 2)
 	case '$true':
 		lex()
-		return {
-			op: 'bool',
-			val: true,
-		}
+		return cnf.bool(true)
 	case '$uminus':
 		return defined_term_arity(bound, '-', 1)
 	}
@@ -392,10 +371,7 @@ function defined_term_arity(bound, op, arity) {
 	var args = term_args(bound)
 	if (args.length !== arity)
 		throw new Error(err('Expected ' + arity + ' arguments'))
-	return {
-		args,
-		op,
-	}
+	return cnf.term(op, ...args)
 }
 
 function eat(k) {
@@ -435,10 +411,7 @@ function formula(bound) {
 	default:
 		return args[0]
 	}
-	return {
-		args,
-		op,
-	}
+	return cnf.term(op, ...args)
 }
 
 function formula_name() {
@@ -562,21 +535,15 @@ function infix_unary(bound) {
 	case '=':
 		var op = tok
 		lex()
-		return {
-			args: [
-				a,
-				term(bound),
-			],
-			op,
-		}
+		return cnf.term(op, a, term(bound))
 	}
 	return a
 }
 
 function parse(text, file) {
 	conjecture = null
-	distinct_objects = new Map()
-	formulas = []
+	distinct_objs = new Map()
+	formulas = cnf.term('&')
 	funs = new Map()
 	status = ''
 	parse1(text, file)
@@ -633,20 +600,13 @@ function plain_term(bound, name) {
 	lex()
 	var f = funs.get(name)
 	if (!f) {
-		f = {
-			name,
-			op: 'fun',
-		}
+		f = cnf.fun(name)
 		funs.set(name, f)
 	}
 	if (tok !== '(')
 		return f
 	var args = term_args(bound)
-	return {
-		args,
-		f,
-		op: 'call',
-	}
+	return cnf.call(f, args)
 }
 
 function select(name) {
@@ -660,14 +620,11 @@ function term(bound) {
 	case '"':
 		var name = unquote(tok)
 		lex()
-		a = distinct_objects.get(name)
+		a = distinct_objs.get(name)
 		if (a)
 			return a
-		a = {
-			name,
-			op: 'distinct_object',
-		}
-		distinct_objects.set(name, a)
+		a = cnf.distinct_obj(name)
+		distinct_objs.set(name, a)
 		return a
 	case '$':
 		return defined_term(bound)
@@ -724,10 +681,7 @@ function term(bound) {
 		a = free.get(name)
 		if (a)
 			return a
-		a = {
-			name,
-			op: 'var',
-		}
+		a = cnf.variable(name)
 		free.set(name, a)
 		return a
 	case 'a':
@@ -777,23 +731,15 @@ function unitary_formula(bound) {
 		var op = tok
 		lex()
 		expect('[')
-		var vars = []
+		var variables = []
 		do {
-			var a = {
-				name: tok,
-				op: 'var',
-			}
+			var a = cnf.variable(tok)
 			bound = iop.put(bound, tok, a)
 			lex()
 		} while (eat(','))
 		expect(']')
 		expect(':')
-		var args = [unitary_formula(bound)]
-		return {
-			args,
-			op,
-			vars,
-		}
+		return cnf.quant(op, variables, unitary_formula(bound))
 	case '(':
 		lex()
 		var a = formula(bound)
@@ -801,10 +747,7 @@ function unitary_formula(bound) {
 		return a
 	case '~':
 		lex()
-		return {
-			args: [unitary_formula(bound)],
-			op: '~',
-		}
+		return cnf.term('~', unitary_formula(bound))
 	}
 	return infix_unary(bound)
 }
