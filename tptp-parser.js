@@ -27,7 +27,7 @@ case 0:
 	})
 	break
 case 1:
-	iop.print(read(files[0]))
+	console.log(read(files[0]).formulas + '')
 	break
 default:
 	for (var file of files) {
