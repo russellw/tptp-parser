@@ -286,6 +286,7 @@ function number() {
 // Parser
 var conjecture
 var distinct_objs
+var files
 var formulas
 var free
 var funs
@@ -543,18 +544,21 @@ function infix_unary(bound) {
 function parse(text, file) {
 	conjecture = null
 	distinct_objs = new Map()
+	files = []
 	formulas = cnf.term('&')
 	funs = new Map()
 	status = ''
 	parse1(text, file)
 	return {
 		conjecture,
+		files,
 		formulas,
 		status,
 	}
 }
 
 function parse1(text1, file1, selection1) {
+	files.push(file1)
 
 	// Save
 	var file0 = file

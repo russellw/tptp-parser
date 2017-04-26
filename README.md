@@ -10,6 +10,12 @@ Supplying the name of the file from which the text was read is optional; if give
 The return value is an object with the following fields:
 
 ```
+files
+```
+
+Names of the files that were read. This is useful if you want to see what's going on with recursive `include` directives.
+
+```
 formulas
 ```
 
