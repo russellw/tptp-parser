@@ -12,6 +12,11 @@ function read(file) {
 	return index.parse(text, file)
 }
 
+it('formulas', function () {
+	var formulas = cnf.term('&')
+	formulas.push(cnf.term('=>', cnf.term('&', cnf.fun('p0'), cnf.term('~', cnf.fun('q0'))), cnf.term('|', cnf.fun('r0'), cnf.term('~', cnf.fun('s0')))))
+	assertIso(read('test.p').formulas, formulas)
+})
 it('status', function () {
 	assert(read('test.p').status === 'Theorem')
 })
