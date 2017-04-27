@@ -16,6 +16,12 @@ files
 Names of the files that were read. This is useful if you want to see what's going on with recursive `include` directives.
 
 ```
+bytes
+```
+
+Total bytes read.
+
+```
 formulas
 ```
 

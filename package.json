@@ -6,7 +6,7 @@
   "dependencies": {
     "big-integer": "^1.6.22",
     "big-rational": "^0.10.6",
-    "clause-normal-form": "^2.2.0",
+    "clause-normal-form": "^2.2.1",
     "command-files": "^1.1.0",
     "commander": "^2.9.0",
     "get-stdin": "^5.0.1",

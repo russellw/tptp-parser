@@ -284,6 +284,7 @@ function number() {
 }
 
 // Parser
+var bytes
 var conjecture
 var distinct_objs
 var files
@@ -546,6 +547,7 @@ function infix_unary(bound) {
 }
 
 function parse(text, file) {
+	bytes = 0
 	conjecture = null
 	distinct_objs = new Map()
 	files = []
@@ -554,6 +556,7 @@ function parse(text, file) {
 	status = ''
 	parse1(text, file)
 	return {
+		bytes,
 		conjecture,
 		files,
 		formulas,
@@ -562,6 +565,7 @@ function parse(text, file) {
 }
 
 function parse1(text1, file1, selection1) {
+	bytes += text1.length
 	files.push(file1)
 
 	// Save
