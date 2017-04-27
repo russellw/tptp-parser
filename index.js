@@ -1,6 +1,4 @@
 'use strict'
-var bigInt = require('big-integer')
-var bigRat = require('big-rational')
 var cnf = require('clause-normal-form')
 var fs = require('fs')
 var iop = require('iop')
