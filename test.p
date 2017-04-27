@@ -11,3 +11,8 @@ fof(propositional,axiom,
 %----Roles
 fof(role_hypothesis,hypothesis,(
     p(h) )).
+
+%----Numbers
+fof(integers,axiom,
+    ( p(12)
+    | p(-12) )).

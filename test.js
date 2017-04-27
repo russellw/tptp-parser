@@ -16,6 +16,7 @@ it('formulas', function () {
 	var formulas = cnf.term('&')
 	formulas.push(cnf.term('=>', cnf.term('&', cnf.fun('p0'), cnf.term('~', cnf.fun('q0'))), cnf.term('|', cnf.fun('r0'), cnf.term('~', cnf.fun('s0')))))
 	formulas.push(cnf.call(cnf.fun('p'), [cnf.fun('h')]))
+	formulas.push(cnf.call(cnf.fun('p'), [cnf.integer(12)]), cnf.call(cnf.fun('p'), [cnf.integer(-12)]))
 	assertIso(read('test.p').formulas, formulas)
 })
 it('status', function () {

@@ -255,10 +255,7 @@ function number() {
 		digits()
 		tok = text.slice(i, j)
 		i = j
-		value = {
-			op: 'rat',
-			val: bigRat(tok),
-		}
+		value = cnf.rational(tok)
 		return
 	case 'E':
 	case 'e':
@@ -269,18 +266,12 @@ function number() {
 	default:
 		tok = text.slice(i, j)
 		i = j
-		value = {
-			op: 'int',
-			val: bigInt(tok),
-		}
+		value = cnf.integer(tok)
 		return
 	}
 	tok = text.slice(i, j)
 	i = j
-	value = {
-		op: 'real',
-		val: bigRat(tok),
-	}
+	value = cnf.real(tok)
 }
 
 // Parser
