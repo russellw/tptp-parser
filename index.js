@@ -301,6 +301,8 @@ function annotated_formula() {
 
 		// Role
 		expect(',')
+		if (!tok)
+			throw new Error(err('Expected role'))
 		if (!iop.islower(tok[0]))
 			throw new Error(err('Expected role'))
 		var role = tok
@@ -416,6 +418,8 @@ function formula(bound) {
 }
 
 function formula_name() {
+	if (!tok)
+		throw new Error(err('Expected formula name'))
 	switch (tok[0]) {
 	case "'":
 		var name = unquote(tok)
@@ -490,7 +494,7 @@ function include() {
 
 	// File
 	expect('(')
-	if (tok[0] !== "'")
+	if (!tok.startsWith("'"))
 		throw new Error(err('Expected file'))
 	var name = unquote(tok)
 	lex()
@@ -620,6 +624,8 @@ function select(name) {
 }
 
 function term(bound) {
+	if (!tok)
+		throw new Error(err('Expected term'))
 	switch (tok[0]) {
 	case '"':
 		var name = unquote(tok)
