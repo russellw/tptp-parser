@@ -49,8 +49,6 @@ function read(file) {
 it('formulas', function () {
 	var formulas = cnf.term('&')
 	formulas.push(cnf.term('=>', cnf.term('&', cnf.fun('p0'), cnf.term('~', cnf.fun('q0'))), cnf.term('|', cnf.fun('r0'), cnf.term('~', cnf.fun('s0')))))
-	formulas.push(cnf.call(cnf.fun('p'), [cnf.fun('h')]))
-	formulas.push(cnf.term('|', cnf.call(cnf.fun('p'), [cnf.integer(12)]), cnf.call(cnf.fun('p'), [cnf.integer(-12)])))
 	var X = cnf.variable('X')
 	var Y = cnf.variable('Y')
 	var Z = cnf.variable('Z')
@@ -72,6 +70,8 @@ it('formulas', function () {
 		]),
 	]), not(call(s, call(f, call(f, call(f, b)))))))))
 	formulas.push(form)
+	formulas.push(cnf.call(cnf.fun('p'), [cnf.fun('h')]))
+	formulas.push(cnf.term('|', cnf.call(cnf.fun('p'), [cnf.integer(12)]), cnf.call(cnf.fun('p'), [cnf.integer(-12)])))
 	assertIso(read('test.p').formulas, formulas)
 })
 it('status', function () {
