@@ -300,7 +300,7 @@ function annotated_formula() {
 		// Formula
 		expect(',')
 		free = new Map()
-		var a = formula()
+		var a = formula(cnf.empty)
 		if (free.size)
 			a = cnf.quant('!', Array.from(free.values()), a)
 		if (role === 'conjecture') {
