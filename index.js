@@ -288,7 +288,6 @@ function annotated_formula() {
 	// Name
 	expect('(')
 	if (select(formula_name())) {
-
 		// Role
 		expect(',')
 		if (!tok)
