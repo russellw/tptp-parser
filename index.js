@@ -677,7 +677,7 @@ function term(bound) {
 	case 'Z':
 		var name = tok
 		lex()
-		var a = iop.get(bound, name)
+		var a = bound.get(name)
 		if (a)
 			return a
 		a = free.get(name)
@@ -736,7 +736,7 @@ function unitary_formula(bound) {
 		var variables = []
 		do {
 			var a = cnf.variable(tok)
-			bound = iop.put(bound, tok, a)
+			bound = bound.add(tok, a)
 			lex()
 		} while (eat(','))
 		expect(']')
