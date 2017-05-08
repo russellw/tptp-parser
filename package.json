@@ -4,7 +4,7 @@
     "url": "https://github.com/russellw/tptp-parser/issues"
   },
   "dependencies": {
-    "clause-normal-form": "^3.0.0",
+    "clause-normal-form": "^3.1.1",
     "iop": "^1.4.1"
   },
   "description": "Parser for the TPTP file format",
